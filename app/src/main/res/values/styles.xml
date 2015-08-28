@@ -5,4 +5,23 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <!-- Default application theme. -->
+    <style name="BlueAndPink" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/pink_500</item>
+    </style>
+
+    <!-- Setting theme. -->
+    <style name="SettingTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/grey_100</item>
+        <item name="colorPrimaryDark">@color/grey_600</item>
+        <item name="colorAccent">@color/teal_500</item>
+        <item name="android:colorBackground">@color/grey_50</item>
+    </style>
+
+
+
+
+
 </resources>
