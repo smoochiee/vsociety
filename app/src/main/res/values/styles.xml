@@ -9,7 +9,7 @@
     <style name="BlueAndPink" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/blue_500</item>
         <item name="colorPrimaryDark">@color/blue_700</item>
-        <item name="colorAccent">@color/pink_500</item>
+        <item name="colorAccent">@color/amber_500</item>
     </style>
 
     <!-- Setting theme. -->
@@ -21,6 +21,23 @@
     </style>
 
 
+    <style name="FABStyle">
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="elevation">@dimen/elevation_small</item>
+        <item name="pressedTranslationZ">@dimen/elevation_xlarge</item>
+        <item name="borderWidth">0dp</item>
+        <item name="rippleColor">@android:color/transparent</item>
+    </style>
+
+    <style name="CardViewStyle">
+        <item name="android:layout_marginTop">@dimen/card_margin</item>
+        <item name="android:layout_marginStart">@dimen/card_margin</item>
+        <item name="android:layout_marginEnd">@dimen/card_margin</item>
+        <item name="elevation">@dimen/elevation_xxsmall</item>
+        <item name="pressedTranslationZ">@dimen/elevation_medium</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+
+    </style>
 
 
 

@@ -1,4 +1,19 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="margin_8dp">8dp</dimen>
+    <dimen name="elevation_toolbar">2dp</dimen>
+
+    <dimen name="elevation_xxsmall">2dp</dimen>
+    <dimen name="elevation_xsmall">4dp</dimen>
+    <dimen name="elevation_small">6dp</dimen>
+    <dimen name="elevation_medium">8dp</dimen>
+    <dimen name="elevation_large">10dp</dimen>
+    <dimen name="elevation_xlarge">12dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
+
+    <dimen name="margin_small">4dp</dimen>
+    <dimen name="margin_medium">8dp</dimen>
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="margin_xlarge">24dp</dimen>
 </resources>
