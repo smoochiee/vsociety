@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +24,6 @@ import io.b1ackr0se.vsociety.adapter.ForumAdapter;
 import io.b1ackr0se.vsociety.adapter.SimpleSectionedRecyclerViewAdapter;
 import io.b1ackr0se.vsociety.jsoup.Parser;
 import io.b1ackr0se.vsociety.model.Forum;
-import io.b1ackr0se.vsociety.widget.SimpleDividerItemDecoration;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,7 +75,7 @@ public class ForumFragment extends Fragment {
 
         @Override
         protected ArrayList<Forum> doInBackground(Void... voids) {
-            Parser parser = new Parser();
+            Parser parser = new Parser(context);
             try {
                 return parser.getForumList(BASE_URL);
             }catch (IOException e) {
@@ -118,7 +114,7 @@ public class ForumFragment extends Fragment {
 
         SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
         SimpleSectionedRecyclerViewAdapter sectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter(context, R.layout.section_item, R.id.sectionName, adapter);
+                SimpleSectionedRecyclerViewAdapter(context, R.layout.item_section, R.id.sectionName, adapter);
         sectionedAdapter.setSections(sections.toArray(dummy));
         recyclerView.setAdapter(sectionedAdapter);
     }

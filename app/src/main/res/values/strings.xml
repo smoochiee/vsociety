@@ -7,4 +7,10 @@
     <string name="logout">Logout</string>
     <string name="openDrawer">Open</string>
     <string name="closeDrawer">Close</string>
+    <string name="name">Username</string>
+    <string name="password">Password</string>
+    <string name="login_to_voz">Login to vozForums</string>
+    <string name="cancel">Cancel</string>
+    <string name="username_error">Username cannot be empty</string>
+    <string name="password_error">Password cannot be empty</string>
 </resources>
