@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">Vsociety</string>
     <string name="action_settings">Settings</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login">Login</string>
+    <string name="home">Home page</string>
+    <string name="quick_navigation">Quick navigation</string>
+    <string name="logout">Logout</string>
+    <string name="openDrawer">Open</string>
+    <string name="closeDrawer">Close</string>
 </resources>
