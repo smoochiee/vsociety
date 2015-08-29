@@ -5,8 +5,9 @@ public class Forum {
     private String name;
     private String url;
 
-    public Forum() {
-
+    public Forum(String n, String u) {
+        name = n;
+        url = u;
     }
 
     public String getName() {

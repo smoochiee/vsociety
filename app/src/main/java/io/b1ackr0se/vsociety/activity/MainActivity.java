@@ -1,17 +1,41 @@
-package io.b1ackr0se.vsociety;
+package io.b1ackr0se.vsociety.activity;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import io.b1ackr0se.vsociety.R;
+import io.b1ackr0se.vsociety.fragment.ForumFragment;
+
 public class MainActivity extends AppCompatActivity {
+
+    @Bind(R.id.toolbar)Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        showForumList();
     }
+
+    private void showForumList() {
+        ForumFragment fragment = new ForumFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content, fragment);
+        fragmentTransaction.commit();
+        getSupportActionBar().setTitle("Vsociety");
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

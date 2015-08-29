@@ -324,4 +324,6 @@
     <color name="white">#FFFFFF</color>
     <!-- White -->
 
+    <color name="grey_translucent">#78BDBDBD</color>
+
 </resources>
