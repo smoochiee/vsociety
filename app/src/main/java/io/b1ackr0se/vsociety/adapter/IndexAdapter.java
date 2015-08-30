@@ -1,5 +1,6 @@
 package io.b1ackr0se.vsociety.adapter;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +14,12 @@ import butterknife.ButterKnife;
 import io.b1ackr0se.vsociety.R;
 import io.b1ackr0se.vsociety.model.Forum;
 
-public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ViewHolder> implements View.OnClickListener {
+public class IndexAdapter extends RecyclerView.Adapter<IndexAdapter.ViewHolder> implements View.OnClickListener {
 
     private ArrayList<Forum> forumList;
     private OnItemClickListener onItemClickListener;
 
-    public ForumAdapter(ArrayList<Forum> list) {
+    public IndexAdapter(ArrayList<Forum> list) {
         forumList = list;
     }
 
@@ -30,7 +31,13 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.ViewHolder> 
     public void onClick(final View v) {
         // Give some time to the ripple to finish the effect
         if (onItemClickListener != null)
-            onItemClickListener.onItemClick(v, (Forum) v.getTag());
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onItemClickListener.onItemClick(v, (Forum) v.getTag());
+                }
+            }, 300);
+
     }
 
     @Override

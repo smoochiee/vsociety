@@ -1,7 +1,5 @@
 package io.b1ackr0se.vsociety.activity;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -10,12 +8,13 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +30,7 @@ import java.util.HashMap;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.b1ackr0se.vsociety.R;
-import io.b1ackr0se.vsociety.fragment.ForumFragment;
+import io.b1ackr0se.vsociety.fragment.IndexFragment;
 import io.b1ackr0se.vsociety.jsoup.Parser;
 import io.b1ackr0se.vsociety.model.User;
 
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         setUpNavigation();
 
-        showForumList();
+        showIndexFragment();
     }
 
     private void readPrefs(){
@@ -125,8 +124,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     /**
      * Setup the DrawerLayout
      */
@@ -153,11 +150,11 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Inflate the forum fragment
      */
-    private void showForumList() {
-        ForumFragment fragment = new ForumFragment();
-        FragmentManager fragmentManager = getFragmentManager();
+    private void showIndexFragment() {
+        IndexFragment fragment = new IndexFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content, fragment);
+        fragmentTransaction.replace(R.id.content, fragment, "INDEX");
         fragmentTransaction.commit();
         setTitle("Vsociety");
     }
@@ -215,6 +212,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
@@ -224,7 +223,8 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawers();
-        else super.onBackPressed();
+        else
+            super.onBackPressed();
     }
 
     public class CheckForLogin extends AsyncTask<Void, Void, Void> {
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 if (wrongCredentials)
                     Snackbar.make(contentLayout, "Wrong username or password", Snackbar.LENGTH_SHORT).show();
-                else {
+                else if (noInternetAccess) {
                     final Snackbar snackbar = Snackbar.make(contentLayout, "No internet access", Snackbar.LENGTH_INDEFINITE);
                     snackbar.setAction("Retry", new View.OnClickListener() {
                         @Override

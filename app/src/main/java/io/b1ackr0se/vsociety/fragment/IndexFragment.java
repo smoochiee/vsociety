@@ -2,9 +2,10 @@ package io.b1ackr0se.vsociety.fragment;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,7 +21,9 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.b1ackr0se.vsociety.R;
-import io.b1ackr0se.vsociety.adapter.ForumAdapter;
+import io.b1ackr0se.vsociety.activity.ForumActivity;
+import io.b1ackr0se.vsociety.activity.MainActivity;
+import io.b1ackr0se.vsociety.adapter.IndexAdapter;
 import io.b1ackr0se.vsociety.adapter.SimpleSectionedRecyclerViewAdapter;
 import io.b1ackr0se.vsociety.jsoup.Parser;
 import io.b1ackr0se.vsociety.model.Forum;
@@ -28,7 +31,7 @@ import io.b1ackr0se.vsociety.model.Forum;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ForumFragment extends Fragment {
+public class IndexFragment extends Fragment implements IndexAdapter.OnItemClickListener{
 
     @Bind(R.id.recyclerView) RecyclerView recyclerView;
     @Bind(R.id.progressBar) ProgressBar progressBar;
@@ -37,7 +40,7 @@ public class ForumFragment extends Fragment {
     private ArrayList<Forum> forumList;
     private final String BASE_URL = "https://vozforums.com/index.php";
 
-    public ForumFragment() {
+    public IndexFragment() {
         // Required empty public constructor
     }
 
@@ -48,9 +51,14 @@ public class ForumFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_forum, container, false);
+        View view = inflater.inflate(R.layout.fragment_index, container, false);
         ButterKnife.bind(this, view);
 
         context = getActivity().getApplicationContext();
@@ -64,6 +72,14 @@ public class ForumFragment extends Fragment {
         new GetForumListTask().execute();
     }
 
+    @Override
+    public void onItemClick(View view, Forum forum) {
+        Intent intent = new Intent(getActivity(), ForumActivity.class);
+        intent.putExtra("name", forum.getName());
+        intent.putExtra("url", forum.getUrl());
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 
     public class GetForumListTask extends AsyncTask<Void, Void, ArrayList<Forum>> {
 
@@ -99,8 +115,9 @@ public class ForumFragment extends Fragment {
     private void setUpRecyclerView(){
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        ForumAdapter adapter = new ForumAdapter(forumList);
+        IndexAdapter adapter = new IndexAdapter(forumList);
 
+        adapter.setOnItemClickListener(IndexFragment.this);
 
         List<SimpleSectionedRecyclerViewAdapter.Section> sections =
                 new ArrayList<SimpleSectionedRecyclerViewAdapter.Section>();

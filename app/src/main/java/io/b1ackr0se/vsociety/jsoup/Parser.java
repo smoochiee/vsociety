@@ -30,19 +30,6 @@ public class Parser {
         cookies = (Map<String, String>) pref.getAll();
     }
 
-    public ArrayList<Forum> getForumList(String url) throws IOException {
-        ArrayList<Forum> list = new ArrayList<>();
-        Document document = Jsoup.connect(url).get();
-        Elements tableForum = document.select("table.tborder").select("tr").select("td.alt1Active").select("div");
-        for (Element e : tableForum) {
-            String forumName = e.select("a[href]").select("strong").text();
-            String forumUrl = e.select("a[href]").attr("abs:href");
-            Forum forum = new Forum(forumName, forumUrl);
-            list.add(forum);
-        }
-        return list;
-    }
-
     public String login(String username, String password) throws IOException {
         Connection.Response login = Jsoup.connect("https://vozforums.com/login.php")
                 .data("do", "login")
@@ -50,6 +37,7 @@ public class Parser {
                 .data("vb_login_password", "")
                 .data("vb_login_md5password", Utils.md5(password))
                 .data("vb_login_md5password_utf", Utils.md5(password))
+                .data("cookieuser", "1")
                 .method(Connection.Method.POST)
                 .execute();
 
@@ -111,4 +99,37 @@ public class Parser {
             return false;
         }
     }
+
+    public ArrayList<Forum> getForumList(String url) throws IOException {
+        ArrayList<Forum> list = new ArrayList<>();
+        Document document = Jsoup.connect(url).get();
+        Elements tableForum = document.select("table.tborder").select("tr").select("td.alt1Active").select("div");
+        for (Element e : tableForum) {
+            String forumName = e.select("a[href]").select("strong").text();
+            String forumUrl = e.select("a[href]").attr("abs:href");
+            Forum forum = new Forum(forumName, forumUrl);
+            list.add(forum);
+        }
+        return list;
+    }
+
+    public ArrayList<Forum> getSubForumList(String url) throws IOException {
+        ArrayList<Forum> list = new ArrayList<>();
+        Document document = Jsoup.connect(url).get();
+        Element subForumTable = document.select("table.tborder").get(1);
+        if(!subForumTable.select("td.tcat").text().contains("Sub-Forums")) return null;
+        else {
+            Elements subForum = document.select("table.tborder").get(2).select("table");
+            for (int i = 0; i < subForum.size()-1; i++) {
+                String subForumName = subForum.select("td.alt1Active").get(i).select("a[href]").text();
+                System.out.println("Forum name: " +subForumName);
+                String subForumUrl = subForum.select("td.alt1Active").get(i).select("a[href]").attr("abs:href");
+                Forum forum = new Forum(subForumName, subForumUrl);
+                list.add(forum);
+            }
+            return list;
+        }
+    }
+
+
 }
