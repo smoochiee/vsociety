@@ -36,7 +36,7 @@ public class IndexAdapter extends RecyclerView.Adapter<IndexAdapter.ViewHolder> 
                 public void run() {
                     onItemClickListener.onItemClick(v, (Forum) v.getTag());
                 }
-            }, 300);
+            }, 200);
 
     }
 

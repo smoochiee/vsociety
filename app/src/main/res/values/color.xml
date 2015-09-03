@@ -326,4 +326,11 @@
 
     <color name="grey_translucent">#78BDBDBD</color>
 
+    <!-- sticky color -->
+    <color name="red_link">#F30</color>
+
+    <!-- link color -->
+    <color name="blue_link">#23497C</color>
+
+
 </resources>

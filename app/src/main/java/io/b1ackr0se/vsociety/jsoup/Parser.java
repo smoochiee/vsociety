@@ -16,6 +16,7 @@ import java.util.Map;
 
 import io.b1ackr0se.vsociety.model.Forum;
 import io.b1ackr0se.vsociety.model.User;
+import io.b1ackr0se.vsociety.model.Thread;
 import io.b1ackr0se.vsociety.util.Utils;
 
 public class Parser {
@@ -40,8 +41,6 @@ public class Parser {
                 .data("cookieuser", "1")
                 .method(Connection.Method.POST)
                 .execute();
-
-        System.out.println(Utils.md5("123456"));
 
         cookies = login.cookies();
 
@@ -115,7 +114,7 @@ public class Parser {
 
     public ArrayList<Forum> getSubForumList(String url) throws IOException {
         ArrayList<Forum> list = new ArrayList<>();
-        Document document = Jsoup.connect(url).get();
+        Document document = Jsoup.connect(url).cookies(cookies).get();
         Element subForumTable = document.select("table.tborder").get(1);
         if(!subForumTable.select("td.tcat").text().contains("Sub-Forums")) return null;
         else {
@@ -131,5 +130,51 @@ public class Parser {
         }
     }
 
+    public ArrayList<Thread> getThreadList(String url) throws IOException {
+        ArrayList<Thread> list = new ArrayList<>();
+        Document document;
+        if(cookies!=null)
+            document = Jsoup.connect(url).cookies(cookies).get();
+        else
+            document = Jsoup.connect(url).get();
 
+        Elements titles = document.select("td.alt1 a[id^=thread_title]");
+        for (Element e : titles) {
+            Thread thread = new Thread();
+            thread.setName(e.text());
+            thread.setUrl(e.attr("abs:href"));
+            list.add(thread);
+
+        }
+
+        Elements sticky = document.select("tbody[id^=threadbits_forum]").select("td.alt1[id^=td_threadtitle]").select("div").not("div.smallfont");
+
+        for(int i = 0; i < list.size(); i++) {
+            System.out.println(sticky.get(i).text());
+            if(sticky.get(i).text().startsWith("Sticky:"))
+                list.get(i).setSticky(true);
+            else list.get(i).setSticky(false);
+        }
+
+        Elements author = document.select("td.alt1[id^=td_threadtitle]").select("div.smallfont").select("span[onclick]");
+
+        for(int i = 0; i < list.size(); i++) {
+            list.get(i).setStarter(author.get(i).text());
+        }
+
+        Elements latest = document.select("tbody[id^=threadbits_forum]").select("td.alt2").select("div.smallfont");
+
+        for(int i = 0; i < list.size(); i++) {
+            list.get(i).setLatestReply(latest.get(i).text());
+        }
+
+        Elements replies = document.select("tbody[id^=threadbits_forum]").select("td.alt1").not("td.alt1[id^=td_threadtitle]").select("a[onclick]");
+
+
+        for(int i = 0; i < list.size(); i++) {
+            list.get(i).setNoOfReplies(replies.get(i).text());
+        }
+
+        return list;
+    }
 }

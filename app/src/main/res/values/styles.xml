@@ -6,10 +6,17 @@
     </style>
 
     <!-- Default application theme. -->
-    <style name="BlueAndPink" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="BlueAndAmber" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/blue_500</item>
         <item name="colorPrimaryDark">@color/blue_700</item>
         <item name="colorAccent">@color/grey_500</item>
+    </style>
+
+    <!-- Default application theme without translucent status -->
+    <style name="BlueAndAmberNoTranslucent" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/amber_500</item>
     </style>
 
     <!-- Setting theme. -->

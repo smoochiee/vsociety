@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="50dp"
+    android:minHeight="60dp"
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal">
 
@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:paddingTop="@dimen/margin_medium"
+        android:paddingBottom="@dimen/margin_medium"
         android:orientation="vertical">
     <TextView
         android:id="@+id/threadName"
@@ -18,32 +20,42 @@
         android:textSize="16sp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:text="App android moi cho anh em"
         android:textStyle="bold" />
-        
-        <TextView
-            android:id="@+id/threadStarter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:text="boiledcabbage"/>
 
-        <TextView
-            android:id="@+id/threadReplies"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:text="Tra loi: 5600"/>
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/threadStarter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="•"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/threadReplies"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"/>
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/threadLatest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:text="Today 01:23 by kagura of wind heaven"/>
+            android:paddingRight="15dp"/>
 
     </LinearLayout>
 </LinearLayout>
