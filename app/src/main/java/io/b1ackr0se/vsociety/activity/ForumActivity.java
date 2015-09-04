@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -24,6 +25,10 @@ import io.b1ackr0se.vsociety.jsoup.Parser;
 import io.b1ackr0se.vsociety.model.Forum;
 import io.b1ackr0se.vsociety.model.Thread;
 import io.b1ackr0se.vsociety.widget.SimpleDividerItemDecoration;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class ForumActivity extends AppCompatActivity {
 
@@ -34,6 +39,7 @@ public class ForumActivity extends AppCompatActivity {
 
     private Parser parser;
     private ArrayList<Thread> threadList;
+    private ArrayList<Object> list;
     private ForumAdapter adapter;
 
     @Override
@@ -46,16 +52,69 @@ public class ForumActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String name = getIntent().getStringExtra("name");
-        String url = getIntent().getStringExtra("url");
+        final String name = getIntent().getStringExtra("name");
+        final String url = getIntent().getStringExtra("url");
 
         setTitle(name);
 
-        new GetThreadList().execute(url);
-
+        constructForum(url);
     }
+
+    private void constructForum(final String url) {
+        showProgress();
+        Subscriber<List<Object>> subscriber = new Subscriber<List<Object>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(List<Object> objects) {
+                hideProgress();
+                if (objects != null) {
+                    adapter = new ForumAdapter(ForumActivity.this, list, recyclerView);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(ForumActivity.this));
+                    recyclerView.addItemDecoration(new SimpleDividerItemDecoration(ForumActivity.this));
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+        };
+
+        Observable<List<Object>> observable = Observable.create(new Observable.OnSubscribe<List<Object>>() {
+            @Override
+            public void call(Subscriber<? super List<Object>> subscriber) {
+                try {
+                    list = parser.getThreadList(url);
+                    subscriber.onNext(list);
+                } catch (IOException e) {
+                    subscriber.onNext(null);
+                }
+            }
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        observable.subscribe(subscriber);
+    }
+
+    private void showProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+    }
+
+    private void hideProgress() {
+        fab.show();
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
 
     private void setTitle(String title) {
         if(getSupportActionBar()!=null) getSupportActionBar().setTitle(title);
@@ -123,12 +182,7 @@ public class ForumActivity extends AppCompatActivity {
 
         @Override
         protected ArrayList<Thread> doInBackground(String... strings) {
-            try {
-                return parser.getThreadList(strings[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
                 return null;
-            }
         }
 
         @Override
@@ -137,7 +191,6 @@ public class ForumActivity extends AppCompatActivity {
             recyclerView.setVisibility(View.VISIBLE);
             fab.show();
             if(result!=null) {
-                adapter = new ForumAdapter(ForumActivity.this,result, recyclerView);
                 recyclerView.setLayoutManager(new LinearLayoutManager(ForumActivity.this));
                 recyclerView.addItemDecoration(new SimpleDividerItemDecoration(ForumActivity.this));
                 recyclerView.setAdapter(adapter);

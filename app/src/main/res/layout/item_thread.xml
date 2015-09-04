@@ -18,8 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
+        android:paddingLeft="@dimen/margin_medium"
+        android:paddingRight="@dimen/margin_medium"
         android:textStyle="bold" />
 
         <LinearLayout
@@ -30,8 +30,8 @@
                 android:id="@+id/threadStarter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginStart="15dp"/>
+                android:layout_marginLeft="@dimen/margin_medium"
+                android:layout_marginStart="@dimen/margin_medium"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -45,8 +45,8 @@
                 android:id="@+id/threadReplies"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
-                android:layout_marginEnd="15dp"/>
+                android:layout_marginRight="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_medium"/>
         </LinearLayout>
 
 
@@ -54,8 +54,8 @@
             android:id="@+id/threadLatest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"/>
+            android:paddingLeft="@dimen/margin_medium"
+            android:paddingRight="@dimen/margin_medium"/>
 
     </LinearLayout>
 </LinearLayout>

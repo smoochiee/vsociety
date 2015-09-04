@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import io.b1ackr0se.vsociety.model.Forum;
 import io.b1ackr0se.vsociety.model.User;
@@ -130,13 +131,28 @@ public class Parser {
         }
     }
 
-    public ArrayList<Thread> getThreadList(String url) throws IOException {
-        ArrayList<Thread> list = new ArrayList<>();
+    public ArrayList<Object> getThreadList(String url) throws IOException {
+        ArrayList<Object> subForumList = new ArrayList<>();
         Document document;
         if(cookies!=null)
             document = Jsoup.connect(url).cookies(cookies).get();
         else
             document = Jsoup.connect(url).get();
+
+        //get subforum
+        Element subForumTable = document.select("table.tborder").get(1);
+        if(subForumTable.select("td.tcat").text().contains("Sub-Forums")) {
+            Elements subForum = document.select("table.tborder").get(2).select("table");
+            for (int i = 0; i < subForum.size()-1; i++) {
+                String subForumName = subForum.select("td.alt1Active").get(i).select("a[href]").text();
+                System.out.println("Forum name: " +subForumName);
+                String subForumUrl = subForum.select("td.alt1Active").get(i).select("a[href]").attr("abs:href");
+                Forum forum = new Forum(subForumName, subForumUrl);
+                subForumList.add(forum);
+            }
+        }
+
+        ArrayList<Thread> list = new ArrayList<>();
 
         Elements titles = document.select("td.alt1 a[id^=thread_title]");
         for (Element e : titles) {
@@ -144,7 +160,6 @@ public class Parser {
             thread.setName(e.text());
             thread.setUrl(e.attr("abs:href"));
             list.add(thread);
-
         }
 
         Elements sticky = document.select("tbody[id^=threadbits_forum]").select("td.alt1[id^=td_threadtitle]").select("div").not("div.smallfont");
@@ -175,6 +190,8 @@ public class Parser {
             list.get(i).setNoOfReplies(replies.get(i).text());
         }
 
-        return list;
+        subForumList.addAll(list);
+
+        return subForumList;
     }
 }

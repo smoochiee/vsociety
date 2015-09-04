@@ -1,7 +1,6 @@
 package io.b1ackr0se.vsociety.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,11 +16,13 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.b1ackr0se.vsociety.R;
+import io.b1ackr0se.vsociety.model.Forum;
 import io.b1ackr0se.vsociety.model.Thread;
 import io.b1ackr0se.vsociety.util.OnItemClickListener;
 import io.b1ackr0se.vsociety.util.OnLoadMoreListener;
 
 public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickListener{
+    private final int VIEW_SUBFORUM = 0;
     private final int VIEW_THREAD = 1;
     private final int VIEW_PROGRESS = 2;
 
@@ -35,11 +36,11 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
     private int linkColor;
     private int stickyColor;
 
-    private List<Thread> threadList;
+    private List<Object> list;
 
-    public ForumAdapter(Context c, List<Thread> thread, RecyclerView recyclerView) {
+    public ForumAdapter(Context c, List<Object> thread, RecyclerView recyclerView) {
         context = c;
-        this.threadList = thread;
+        this.list = thread;
         if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
             final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -62,22 +63,30 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
 
     @Override
     public int getItemViewType(int position) {
-        return threadList.get(position) != null ? VIEW_THREAD : VIEW_PROGRESS;
+        Object object = list.get(position);
+        if(object==null) return VIEW_PROGRESS;
+        else {
+            if(object instanceof Thread) return VIEW_THREAD;
+            else return VIEW_SUBFORUM;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return threadList.size();
+        return list.size();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         RecyclerView.ViewHolder vh;
         if (viewType == VIEW_THREAD) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_thread, parent, false);
             v.setOnClickListener(this);
             vh = new ThreadViewHolder(v);
+        } else if (viewType == VIEW_SUBFORUM) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_subforum, parent, false);
+            v.setOnClickListener(this);
+            vh = new SubForumViewHolder(v);
         } else {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_progress, parent, false);
             vh = new ProgressViewHolder(v);
@@ -87,16 +96,21 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Object item = list.get(position);
         if(holder instanceof ThreadViewHolder) {
-            Thread thread = threadList.get(position);
+            Thread thread = (Thread) list.get(position);
             ((ThreadViewHolder)holder).threadName.setText(thread.getName());
             if(thread.isSticky())
                 ((ThreadViewHolder)holder).threadName.setTextColor(stickyColor);
             else ((ThreadViewHolder)holder).threadName.setTextColor(linkColor);
             ((ThreadViewHolder)holder).threadStarter.setText(thread.getStarter());
             ((ThreadViewHolder)holder).threadLatest.setText(thread.getLatestReply());
-            ((ThreadViewHolder)holder).threadReplies.setText("Replies: " +thread.getNoOfReplies());
+            ((ThreadViewHolder)holder).threadReplies.setText(thread.getNoOfReplies() + " replies");
             holder.itemView.setTag(thread);
+        } else if (holder instanceof SubForumViewHolder)  {
+            Forum forum = (Forum) list.get(position);
+            ((SubForumViewHolder)holder).subForumName.setText(forum.getName());
+            holder.itemView.setTag(forum);
         } else {
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
         }
@@ -110,15 +124,13 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
         this.onLoadMoreListener = onLoadMoreListener;
     }
 
-
-
     @Override
     public void onClick(final View view) {
         if (onItemClickListener != null) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    onItemClickListener.onItemClick(view, (Thread) view.getTag());
+                    onItemClickListener.onItemClick(view, view.getTag());
                 }
             }, 200);
         }
@@ -133,6 +145,15 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
         public ThreadViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+    }
+
+    protected static class SubForumViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.subForumName)TextView subForumName;
+
+        public SubForumViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
         }
     }
 
