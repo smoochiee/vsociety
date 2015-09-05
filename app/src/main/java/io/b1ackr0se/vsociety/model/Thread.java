@@ -1,5 +1,10 @@
 package io.b1ackr0se.vsociety.model;
 
+/**
+ * Model for a typical thread on the forum.
+ *
+ * @author b1acKr0se
+ */
 public class Thread {
     private String name;
     private String url;

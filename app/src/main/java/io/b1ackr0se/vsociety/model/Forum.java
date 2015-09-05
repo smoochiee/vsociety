@@ -1,5 +1,10 @@
 package io.b1ackr0se.vsociety.model;
 
+/**
+ * Model for forum and subforum.
+ *
+ * @author b1acKr0se
+ */
 public class Forum {
 
     private String name;
@@ -25,7 +30,5 @@ public class Forum {
     public void setUrl(String url) {
         this.url = url;
     }
-
-
 
 }
