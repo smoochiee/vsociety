@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,7 +29,7 @@ public class Parser {
     @SuppressWarnings("unchecked")
     public Parser(Context c) {
         context = c;
-        SharedPreferences pref= context.getSharedPreferences("cookies", Context.MODE_PRIVATE);
+        SharedPreferences pref = context.getSharedPreferences("cookies", Context.MODE_PRIVATE);
         cookies = (Map<String, String>) pref.getAll();
     }
 
@@ -83,7 +84,7 @@ public class Parser {
     }
 
     public boolean isUserLoggedIn() {
-        if(cookies==null || cookies.isEmpty()) return false;
+        if (cookies == null || cookies.isEmpty()) return false;
         try {
             Document document = Jsoup.connect("https://vozforums.com/usercp.php")
                     .cookies(cookies)
@@ -117,12 +118,12 @@ public class Parser {
         ArrayList<Forum> list = new ArrayList<>();
         Document document = Jsoup.connect(url).cookies(cookies).get();
         Element subForumTable = document.select("table.tborder").get(1);
-        if(!subForumTable.select("td.tcat").text().contains("Sub-Forums")) return null;
+        if (!subForumTable.select("td.tcat").text().contains("Sub-Forums")) return null;
         else {
             Elements subForum = document.select("table.tborder").get(2).select("table");
-            for (int i = 0; i < subForum.size()-1; i++) {
+            for (int i = 0; i < subForum.size() - 1; i++) {
                 String subForumName = subForum.select("td.alt1Active").get(i).select("a[href]").text();
-                System.out.println("Forum name: " +subForumName);
+                System.out.println("Forum name: " + subForumName);
                 String subForumUrl = subForum.select("td.alt1Active").get(i).select("a[href]").attr("abs:href");
                 Forum forum = new Forum(subForumName, subForumUrl);
                 list.add(forum);
@@ -134,18 +135,17 @@ public class Parser {
     public ArrayList<Object> getThreadList(String url) throws IOException {
         ArrayList<Object> subForumList = new ArrayList<>();
         Document document;
-        if(cookies!=null)
+        if (cookies != null)
             document = Jsoup.connect(url).cookies(cookies).get();
         else
             document = Jsoup.connect(url).get();
 
         //get subforum
         Element subForumTable = document.select("table.tborder").get(1);
-        if(subForumTable.select("td.tcat").text().contains("Sub-Forums")) {
+        if (subForumTable.select("td.tcat").text().contains("Sub-Forums")) {
             Elements subForum = document.select("table.tborder").get(2).select("table");
-            for (int i = 0; i < subForum.size()-1; i++) {
+            for (int i = 0; i < subForum.size() - 1; i++) {
                 String subForumName = subForum.select("td.alt1Active").get(i).select("a[href]").text();
-                System.out.println("Forum name: " +subForumName);
                 String subForumUrl = subForum.select("td.alt1Active").get(i).select("a[href]").attr("abs:href");
                 Forum forum = new Forum(subForumName, subForumUrl);
                 subForumList.add(forum);
@@ -164,30 +164,45 @@ public class Parser {
 
         Elements sticky = document.select("tbody[id^=threadbits_forum]").select("td.alt1[id^=td_threadtitle]").select("div").not("div.smallfont");
 
-        for(int i = 0; i < list.size(); i++) {
-            System.out.println(sticky.get(i).text());
-            if(sticky.get(i).text().startsWith("Sticky:"))
+        for (int i = 0; i < list.size(); i++) {
+            if (sticky.get(i).text().startsWith("Sticky:"))
                 list.get(i).setSticky(true);
-            else list.get(i).setSticky(false);
+            else if (sticky.get(i).text().startsWith("Moved:")) {
+                list.get(i).setLatestReply("Thread has been moved.");
+                list.get(i).setSticky(false);
+            } else list.get(i).setSticky(false);
+
+            if (sticky.get(i).select("strong").text() != null && !sticky.get(i).select("strong").text().equals("")) {
+                list.get(i).setName(sticky.get(i).select("strong").text() + " - " + list.get(i).getName());
+            }
         }
+
 
         Elements author = document.select("td.alt1[id^=td_threadtitle]").select("div.smallfont").select("span[onclick]");
 
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             list.get(i).setStarter(author.get(i).text());
         }
 
         Elements latest = document.select("tbody[id^=threadbits_forum]").select("td.alt2").select("div.smallfont");
 
-        for(int i = 0; i < list.size(); i++) {
-            list.get(i).setLatestReply(latest.get(i).text());
+        Iterator<Element> iterator = latest.iterator();
+        while (iterator.hasNext()) {
+            String s = iterator.next().text();
+            if(s.startsWith("Thread deleted by") || s.startsWith("Reason:"))
+                iterator.remove();
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            if (i<latest.size())
+                list.get(i).setLatestReply(latest.get(i).text());
         }
 
         Elements replies = document.select("tbody[id^=threadbits_forum]").select("td.alt1").not("td.alt1[id^=td_threadtitle]").select("a[onclick]");
 
-
-        for(int i = 0; i < list.size(); i++) {
-            list.get(i).setNoOfReplies(replies.get(i).text());
+        for (int i = 0; i < list.size(); i++) {
+            if (i<replies.size())
+                list.get(i).setNoOfReplies(replies.get(i).text());
         }
 
         subForumList.addAll(list);

@@ -332,5 +332,11 @@
     <!-- link color -->
     <color name="blue_link">#23497C</color>
 
+    <!-- HCM/TQ color -->
+    <color name="hcm_tq">#FF33FF</color>
+
+    <!-- other place color -->
+    <color name="other_place">#336600</color>
+
 
 </resources>

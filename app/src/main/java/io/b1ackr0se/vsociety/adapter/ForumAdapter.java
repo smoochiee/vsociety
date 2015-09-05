@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,8 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
     private OnItemClickListener onItemClickListener;
     private int linkColor;
     private int stickyColor;
+    private int hcmColor;
+    private int otherPlaceColor;
 
     private List<Object> list;
 
@@ -59,6 +63,8 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
         }
         linkColor = ContextCompat.getColor(context,R.color.blue_link);
         stickyColor = ContextCompat.getColor(context,R.color.red_link);
+        hcmColor = ContextCompat.getColor(context,R.color.hcm_tq);
+        otherPlaceColor = ContextCompat.getColor(context,R.color.other_place);
     }
 
     @Override
@@ -98,22 +104,96 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Object item = list.get(position);
         if(holder instanceof ThreadViewHolder) {
-            Thread thread = (Thread) list.get(position);
-            ((ThreadViewHolder)holder).threadName.setText(thread.getName());
-            if(thread.isSticky())
-                ((ThreadViewHolder)holder).threadName.setTextColor(stickyColor);
-            else ((ThreadViewHolder)holder).threadName.setTextColor(linkColor);
-            ((ThreadViewHolder)holder).threadStarter.setText(thread.getStarter());
-            ((ThreadViewHolder)holder).threadLatest.setText(thread.getLatestReply());
-            ((ThreadViewHolder)holder).threadReplies.setText(thread.getNoOfReplies() + " replies");
+            Thread thread = (Thread) item;
+
+
+            String name = thread.getName();
+            int endPosition = getEndPosition(name);
+            if (endPosition == -1)
+                ((ThreadViewHolder) holder).threadName.setText(name);
+            else {
+                SpannableString nameSpan = new SpannableString(name);
+                nameSpan.setSpan(new ForegroundColorSpan(getPrefixColor(name)),0,endPosition+1,0);
+                ((ThreadViewHolder) holder).threadName.setText(nameSpan);
+            }
+
+            if (thread.isSticky())
+                ((ThreadViewHolder) holder).threadName.setTextColor(stickyColor);
+            else ((ThreadViewHolder) holder).threadName.setTextColor(linkColor);
+
+            ((ThreadViewHolder) holder).threadStarter.setText(thread.getStarter());
+
+            String latestReply = thread.getLatestReply();
+            if (latestReply != null) {
+                if (!latestReply.equals("Thread has been moved.")) {
+                    SpannableString latest = new SpannableString(latestReply);
+                    latest.setSpan(new ForegroundColorSpan(linkColor), latestReply.lastIndexOf(" ") + 1, latestReply.length(), 0);
+                    ((ThreadViewHolder) holder).threadLatest.setText(latest);
+                } else ((ThreadViewHolder) holder).threadLatest.setText(latestReply);
+            } else ((ThreadViewHolder) holder).threadLatest.setText("Latest reply not found.");
+
+            if (thread.getNoOfReplies() != null)
+                ((ThreadViewHolder) holder).threadReplies.setText(thread.getNoOfReplies() + " replies");
+            else ((ThreadViewHolder) holder).threadReplies.setText("no replies");
+
             holder.itemView.setTag(thread);
-        } else if (holder instanceof SubForumViewHolder)  {
-            Forum forum = (Forum) list.get(position);
-            ((SubForumViewHolder)holder).subForumName.setText(forum.getName());
+        } else if (holder instanceof SubForumViewHolder) {
+            Forum forum = (Forum) item;
+            ((SubForumViewHolder) holder).subForumName.setText(forum.getName());
             holder.itemView.setTag(forum);
         } else {
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
         }
+    }
+
+    private int getPrefixColor(String name) {
+        String prefix = name.substring(0, name.indexOf("-") - 1);
+        switch (prefix) {
+            case "HN":
+                return stickyColor;
+            case "HN/TQ":
+                return stickyColor;
+            case "HCM":
+                return hcmColor;
+            case "HCM/TQ":
+                return hcmColor;
+            case "Nơi khác":
+                return otherPlaceColor;
+            case "Nơi khác/TQ":
+                return otherPlaceColor;
+            default:
+                return -1;
+        }
+    }
+
+    private int getEndPosition(String name) {
+        if(!isStartedWithPlace(name)) return -1;
+        else {
+            String prefix = name.substring(0,name.indexOf("-")-1);
+            System.out.println("Get prefix" + prefix);
+            switch (prefix) {
+                case "HN":
+                    return 1;
+                case "HN/TQ":
+                    return 4;
+                case "HCM":
+                    return 2;
+                case "HCM/TQ":
+                    return 5;
+                case "Nơi khác":
+                    return 7;
+                case "Nơi khác/TQ":
+                    return 10;
+                default:
+                    return -1;
+            }
+        }
+    }
+
+    private boolean isStartedWithPlace(String name) {
+        return name.startsWith("HN -") || name.startsWith("HN/TQ -") ||
+                name.startsWith("HCM -") || name.startsWith("HCM/TQ -") ||
+                name.startsWith("Nơi khác -") || name.startsWith("Nơi khác/TQ -");
     }
 
     public void setLoaded() {
@@ -122,6 +202,10 @@ public class ForumAdapter extends RecyclerView.Adapter implements View.OnClickLi
 
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
